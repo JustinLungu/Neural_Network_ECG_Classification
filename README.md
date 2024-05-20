@@ -5,6 +5,7 @@ Useful links regarding data:
 - https://en.ecgpedia.org/wiki/Basics
 - https://archive.physionet.org/physiobank/database/html/mitdbdir/intro.htm
 - https://archive.physionet.org/physiobank/database/html/mitdbdir/records.htm
+- https://physionet.org/content/mitdb/1.0.0/
 
 
 **Annotations in ECG Data (N, R, L, F, V, etc.)**
