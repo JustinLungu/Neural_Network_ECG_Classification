@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Neural_Network_ECG_Classification.iml" filepath="$PROJECT_DIR$/.idea/Neural_Network_ECG_Classification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../preprocessing/.idea/Pathological.iml" filepath="$PROJECT_DIR$/../preprocessing/.idea/Pathological.iml" />
+    </modules>
+  </component>
+</project>
