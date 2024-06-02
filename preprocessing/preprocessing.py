@@ -5,6 +5,16 @@ from scipy.signal import medfilt
 import csv
 from sklearn.model_selection import train_test_split
 
+UPPER_AMPLITUDE_THRESHOLD = 2
+LOWER_AMPLITUDE_THRESHOLD = -1.25
+
+def remove_artifacts_by_amplitude(channel):
+    """ Removes artifacts whose amplitude is below LOWER_AMPLITUDE_THRESHOLD
+    or above UPPER_AMPLITUDE_THRESHOLD
+    """
+    return [x for x in channel if x > LOWER_AMPLITUDE_THRESHOLD and x < UPPER_AMPLITUDE_THRESHOLD]
+
+
 def plot_sig(ch1, ch2, title):
     plt.figure(figsize=(10, 4))
     plt.plot(ch1[1000:3000])
@@ -44,6 +54,13 @@ data212 = np.array(data212)
 train_size = int(0.7 * len(data212))
 test_size = int(0.2 * len(data212))
 locked_size = len(data212) - train_size - test_size
+
+plot_sig(channel1, channel2, "Original ECG signal")
+
+channel1 = remove_artifacts_by_amplitude(channel1)
+channel2 = remove_artifacts_by_amplitude(channel2)
+
+plot_sig(channel1, channel2, "ECG signal without amplitude artifacts")
 
 train_data, rest_of_data = train_test_split(data212, train_size=train_size, shuffle=False)
 test_data, locked_test_data = train_test_split(rest_of_data, test_size=locked_size, shuffle=False)
