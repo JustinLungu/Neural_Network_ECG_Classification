@@ -14,15 +14,33 @@ def remove_artifacts_by_amplitude(channel):
     """
     return [x for x in channel if x > LOWER_AMPLITUDE_THRESHOLD and x < UPPER_AMPLITUDE_THRESHOLD]
 
+#this function is ugly change it
+def plot_windows(ch1, ch2, title):
+    #plt.figure(figsize=(10, 4))
+    length = len(channel1)
+    start = 1050000
+    end = 1052000
+    while end <= length:
+        plt.figure(figsize=(10, 4))
+        plt.plot(ch1[start:end])
+        plt.plot(ch2[start:end])
+        plt.title(f"from {start} to {end}. length: {length}")
+        plt.xlabel('Samples')
+        plt.ylabel('Amplitude')
+        plt.show()
+        start = end
+        end = end + 2000
 
 def plot_sig(ch1, ch2, title):
     plt.figure(figsize=(10, 4))
-    plt.plot(ch1[1000:3000])
-    plt.plot(ch2[1000:3000])
+    plt.figure(figsize=(10, 4))
+    plt.plot(ch1[0:2000])
+    plt.plot(ch2[0:2000])
     plt.title(title)
     plt.xlabel('Samples')
     plt.ylabel('Amplitude')
     plt.show()
+
 
 #loading data
 channel1=[]
@@ -50,41 +68,43 @@ with open("data212/ecg_annotations_212.csv", "r") as fa:
 data212 = list(zip(channel1, channel2, annotations))
 data212 = np.array(data212)
 
-#train/test split
-train_size = int(0.7 * len(data212))
-test_size = int(0.2 * len(data212))
-locked_size = len(data212) - train_size - test_size
+print(data212[:5])
 
-plot_sig(channel1, channel2, "Original ECG signal")
+#plot_windows(channel1, channel2, "Original ECG signal")
 
+#CHANGE THIS!!! ANNOTATIONS ALSO HAVE TO BE REMOVED NOT JUST SIGNALS
+#removing heartbeats with abnormally low or high amplitudes (lwr = -1.25, upr = 2)
 channel1 = remove_artifacts_by_amplitude(channel1)
 channel2 = remove_artifacts_by_amplitude(channel2)
 
-plot_sig(channel1, channel2, "ECG signal without amplitude artifacts")
+# other artifacts: # techinal problems? muscle movements?
+# manually went through data
+# by visualising windows of size 2000 samples
+# and found the following:
+# ( plot them again to see the exact values):
 
-train_data, rest_of_data = train_test_split(data212, train_size=train_size, shuffle=False)
-test_data, locked_test_data = train_test_split(rest_of_data, test_size=locked_size, shuffle=False)
+#401500 to 402250
+#436700 to 437250
+#558250 to 558550
+#646750 to 647250
+#970500 to 971000
 
-#splitting back into channels
-channel1_train, channel2_train, annotations_train = train_data[:, 0], train_data[:, 1], train_data[:, 2]
-channel1_test, channel2_test, annotations_test = test_data[:, 0], test_data[:, 1], test_data[:, 2]
-channel1_locked, channel2_locked, annotations_locked = locked_test_data[:, 0], locked_test_data[:, 1], locked_test_data[:, 2]
+#????? or just a bit noisy
+# check it out after butterworth
+#688750 to 690000
+#694000 to 695000
+#723250 to 723750
+#979500 to 984000
 
-# Convert string elements to floats
-channel1_train = [float(value) for value in channel1_train]
-channel2_train = [float(value) for value in channel2_train]
+#data balancing
+#butterworth filter
 
-channel1_test = [float(value) for value in channel1_test]
-channel2_test = [float(value) for value in channel2_test]
+#plot_sig(channel1, channel2, "ECG signal without amplitude artifacts")
 
-channel1_locked = [float(value) for value in channel1_locked]
-channel2_locked = [float(value) for value in channel2_locked]
+'''NORMALIZATION + BASELINE FITTING:'''
+#plot_sig(channel1, channel2, "Original ECG signal")
 
-print("Data is loaded.")
 processed_list = []
-
-'''NORMALIZATION + BASELINE FITTING: ADJUST FOR PREPROCESSING ON SPLIT DATASET???'''
-plot_sig(channel1_train, channel2_train, "Original ECG signal")
 
 #min-max normalization [-1,1] (results very small? consider sklearn.minmaxscaler)
 min1 = np.min(channel1)
@@ -94,7 +114,7 @@ max2 = np.max(channel2)
 ch1_norm = (channel1 - min1) / (max1 - min1)
 ch2_norm = (channel2 - min2) / (max2 - min2)
 
-plot_sig(ch1_norm, ch2_norm, "Normalized ECG signal")
+#plot_sig(ch1_norm, ch2_norm, "Normalized ECG signal")
 
 '''
 The medfilt function, short for "median filter," is a method used in signal processing to reduce noise in a signal. It replaces each data point with the median value in its neighboring window. This helps smooth out the signal while preserving sharp edges and important features.
@@ -119,4 +139,29 @@ for channel in [ch1_norm, ch2_norm]:
   res = np.subtract(channel,X0)
   processed_list.append(res)
 
-plot_sig(processed_list[0], processed_list[1], "Baseline fitted ECG signal")
+#plot_sig(processed_list[0], processed_list[1], "Baseline fitted ECG signal")
+
+'''BUTTERWORTH FILTER FOR 30Hz(?) COMING SOON'''
+
+#train/test split
+train_size = int(0.7 * len(data212))
+test_size = int(0.2 * len(data212))
+locked_size = len(data212) - train_size - test_size
+
+train_data, rest_of_data = train_test_split(data212, train_size=train_size, shuffle=False)
+test_data, locked_test_data = train_test_split(rest_of_data, test_size=locked_size, shuffle=False)
+
+#splitting back into channels
+channel1_train, channel2_train, annotations_train = train_data[:, 0], train_data[:, 1], train_data[:, 2]
+channel1_test, channel2_test, annotations_test = test_data[:, 0], test_data[:, 1], test_data[:, 2]
+channel1_locked, channel2_locked, annotations_locked = locked_test_data[:, 0], locked_test_data[:, 1], locked_test_data[:, 2]
+
+# Convert string elements to floats
+channel1_train = [float(value) for value in channel1_train]
+channel2_train = [float(value) for value in channel2_train]
+
+channel1_test = [float(value) for value in channel1_test]
+channel2_test = [float(value) for value in channel2_test]
+
+channel1_locked = [float(value) for value in channel1_locked]
+channel2_locked = [float(value) for value in channel2_locked]
