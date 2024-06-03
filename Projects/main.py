@@ -38,18 +38,6 @@ if __name__ == "__main__":
         annotation_counts = Counter(annotation_windows)
         print(annotation_counts)
 
-        # Split the data
-        prep.split_data(signal1_windows, signal2_windows, annotation_windows, TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
-
-        # Plotting each signal individually from train, validation and test
-        p_212.plot_1_signal(prep.signal1.train, prep.labels.train, title="Training Data", filename="s1_training_data.png")
-        p_212.plot_1_signal(prep.signal1.val, prep.labels.val, title="Validation Data", filename="s1_validation_data.png")
-        p_212.plot_1_signal(prep.signal1.test, prep.labels.test, title="Test Data", filename="s1_test_data.png")
-
-        p_212.plot_1_signal(prep.signal2.train, prep.labels.train, title="Training Data", filename="s2_training_data.png")
-        p_212.plot_1_signal(prep.signal2.val, prep.labels.val, title="Validation Data", filename="s2_validation_data.png")
-        p_212.plot_1_signal(prep.signal2.test, prep.labels.test, title="Test Data", filename="s2_test_data.png")
-
         save = Save(212, signal1_windows, signal2_windows, annotation_windows)
         save.save_data_json()
         save.save_data_csv()
@@ -58,4 +46,19 @@ if __name__ == "__main__":
         load = Load(212)
         signal1_windows, signal2_windows, annotation_windows = load.load_data_json()
         signal1_windows_c, signal2_windows_c, annotation_windows_c = load.load_data_csv()
+
+    # Split the data
+    prep.split_data(signal1_windows, signal2_windows, annotation_windows, TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
+
+    # Plotting each signal individually from train, validation and test
+    p_212.plot_1_signal(prep.signal1.train, prep.labels.train, title="Training Data", filename="s1_training_data.png")
+    p_212.plot_1_signal(prep.signal1.val, prep.labels.val, title="Validation Data", filename="s1_validation_data.png")
+    p_212.plot_1_signal(prep.signal1.test, prep.labels.test, title="Test Data", filename="s1_test_data.png")
+
+    p_212.plot_1_signal(prep.signal2.train, prep.labels.train, title="Training Data", filename="s2_training_data.png")
+    p_212.plot_1_signal(prep.signal2.val, prep.labels.val, title="Validation Data", filename="s2_validation_data.png")
+    p_212.plot_1_signal(prep.signal2.test, prep.labels.test, title="Test Data", filename="s2_test_data.png")
+
+    annotation_counts = Counter(annotation_windows)
+    print(annotation_counts)
 
