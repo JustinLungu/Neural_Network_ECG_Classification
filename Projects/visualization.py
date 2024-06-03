@@ -9,6 +9,7 @@ class Visualization():
     def __init__(self, p_number):
         self.p_number = p_number
         self.data_path = '../Neural_Network_ECG_Classification/Collected_Data/patient_' + str(p_number) + '/'
+        self.plots_path = '../Neural_Network_ECG_Classification/Projects/Plots/'
         self.valid_annotations = {'N', 'A', 'V', 'f', 'x', 'L', 'R', 'F', '/', '~', 'Q', 'j', 'a', 'J', '!', 'E', 'S', '"', 'e'}
         self.record = wfdb.rdrecord(self.data_path + str(self.p_number))
         self.annotation = wfdb.rdann(self.data_path + str(self.p_number), 'atr')
@@ -116,4 +117,42 @@ class Visualization():
 
         plt.tight_layout()
         self._save_plot(f'patient_{self.p_number}_annotation_sep_channels.png')
+        plt.show()
+
+
+    def plot_1_signal(self, values_list, annotations, title, filename=None):
+        """
+        Plots the given arrays of values using matplotlib.
+
+        Parameters:
+        values_list (list of arrays): A list of numerical arrays to plot.
+        annotations (list of str): Corresponding annotations for the values.
+        title (str): The title for the plot.
+        filename (str, optional): The filename to save the plot. If None, the plot is not saved.
+        """
+
+        # Select 4 random indexes
+        random_indexes = np.random.choice(len(values_list), 4, replace=False)
+
+        # Get the values and annotations for the random indexes
+        values_list = [values_list[idx] for idx in random_indexes]
+        annotations = [annotations[idx] for idx in random_indexes]
+
+        plt.figure(figsize=(12, 8))
+        
+        for i, (values, annotation) in enumerate(zip(values_list, annotations), 1):
+            plt.subplot(2, 2, i)
+            plt.plot(values, linestyle='-')
+            plt.title(f"Annotation: {annotation}")
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.grid(True)
+        
+        plt.suptitle(title)
+        plt.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust the layout to make space for the suptitle
+        
+        if filename:
+            save_path = os.path.join(self.plots_path, filename)
+            plt.savefig(save_path)
+            print(f"Plot saved as {filename} in {self.plots_path}")
         plt.show()
