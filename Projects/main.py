@@ -15,14 +15,20 @@ INVALID_ANNOTATIONS = {'~', '+', '|'}
 
 DO_PREPROCESSING = False
 
+TRAIN_RATIO = 0.7
+VAL_RATIO = 0.2
+TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
-def plot_multiple(values_list, annotations):
+
+def plot_4_random(values_list, annotations, title, filename=None):
     """
     Plots the given arrays of values using matplotlib.
 
     Parameters:
     values_list (list of arrays): A list of numerical arrays to plot.
     annotations (list of str): Corresponding annotations for the values.
+    title (str): The title for the plot.
+    filename (str, optional): The filename to save the plot. If None, the plot is not saved.
     """
 
     # Select 4 random indexes
@@ -42,7 +48,11 @@ def plot_multiple(values_list, annotations):
         plt.ylabel('Value')
         plt.grid(True)
     
-    plt.tight_layout()
+    plt.suptitle(title)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])  # Adjust the layout to make space for the suptitle
+    
+    if filename:
+        plt.savefig(filename)
     plt.show()
 
 if __name__ == "__main__":
@@ -50,10 +60,11 @@ if __name__ == "__main__":
     #p_212.multi_plot_label()
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
+    prep = Preprocessing(p_212.record, p_212.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS)
 
     # Example usage
     if DO_PREPROCESSING is True:
-        prep = Preprocessing(p_212.record, p_212.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS)
+        
         data_windows, annotation_windows = prep.extract_windows(WINDOW_SIZE, OVERLAP)
         signal1_windows = data_windows[:, :, 0:1]
         signal2_windows = data_windows[:, :, 1:2]
@@ -72,9 +83,14 @@ if __name__ == "__main__":
         signal1_windows_c, signal2_windows_c, annotation_windows_c = load.load_data_csv()
 
     
+    # Split the data
+    prep.split_data(signal1_windows, signal2_windows, annotation_windows, TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
 
-    plot_multiple(signal1_windows, annotation_windows)
-    plot_multiple(signal2_windows, annotation_windows)
+    # Example of plotting the first window with its annotation
+    plot_4_random(prep.signal1.train, prep.labels.train, title="Training Data", filename="training_data.png")
+    plot_4_random(prep.signal1.val, prep.labels.val, title="Validation Data", filename="validation_data.png")
+    plot_4_random(prep.signal1.test, prep.labels.test, title="Test Data", filename="test_data.png")
+    
 
     annotation_counts = Counter(annotation_windows)
     print(annotation_counts)
