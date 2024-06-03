@@ -3,6 +3,7 @@ from preprocessing import Preprocessing
 from save_load import Save, Load
 import matplotlib.pyplot as plt
 from collections import Counter
+import numpy as np
 
 
 
@@ -12,22 +13,36 @@ OVERLAP = 0.5 #0.5 = 50%
 VALID_ANNOTATIONS = {'N', 'R'}
 INVALID_ANNOTATIONS = {'~', '+', '|'}
 
-DO_PREPROCESSING = True
+DO_PREPROCESSING = False
 
 
-def plot(values, annotation):
+def plot_multiple(values_list, annotations):
     """
-    Plots the given array of values using matplotlib.
+    Plots the given arrays of values using matplotlib.
 
     Parameters:
-    values (list or array): An array of numerical values to plot.
+    values_list (list of arrays): A list of numerical arrays to plot.
+    annotations (list of str): Corresponding annotations for the values.
     """
-    plt.figure(figsize=(10, 5))
-    plt.plot(values, linestyle='-')
-    plt.title(annotation)
-    plt.xlabel('Index')
-    plt.ylabel('Value')
-    plt.grid(True)
+
+    # Select 4 random indexes
+    random_indexes = np.random.choice(len(values_list), 4, replace=False)
+
+    # Get the values and annotations for the random indexes
+    values_list = [values_list[idx] for idx in random_indexes]
+    annotations = [annotations[idx] for idx in random_indexes]
+
+    plt.figure(figsize=(12, 8))
+    
+    for i, (values, annotation) in enumerate(zip(values_list, annotations), 1):
+        plt.subplot(2, 2, i)
+        plt.plot(values, linestyle='-')
+        plt.title(f"Annotation: {annotation}")
+        plt.xlabel('Index')
+        plt.ylabel('Value')
+        plt.grid(True)
+    
+    plt.tight_layout()
     plt.show()
 
 if __name__ == "__main__":
@@ -58,4 +73,8 @@ if __name__ == "__main__":
 
     
 
-    #plot(signal1_windows[1], annotation_windows[1])
+    plot_multiple(signal1_windows, annotation_windows)
+    plot_multiple(signal2_windows, annotation_windows)
+
+    annotation_counts = Counter(annotation_windows)
+    print(annotation_counts)
