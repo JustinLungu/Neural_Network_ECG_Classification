@@ -1,7 +1,7 @@
 import wfdb
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.signal import medfilt
+from scipy.signal import medfilt, butter, filtfilt, iirnotch
 import csv
 from sklearn.model_selection import train_test_split
 
@@ -34,8 +34,8 @@ def plot_windows(ch1, ch2, title):
 def plot_sig(ch1, ch2, title):
     plt.figure(figsize=(10, 4))
     plt.figure(figsize=(10, 4))
-    plt.plot(ch1[0:2000])
-    plt.plot(ch2[0:2000])
+    plt.plot(ch1[979500 : 981500])
+    plt.plot(ch2[979500 : 981500])
     plt.title(title)
     plt.xlabel('Samples')
     plt.ylabel('Amplitude')
@@ -68,7 +68,6 @@ with open("data212/ecg_annotations_212.csv", "r") as fa:
 data212 = list(zip(channel1, channel2, annotations))
 data212 = np.array(data212)
 
-print(data212[:5])
 
 #plot_windows(channel1, channel2, "Original ECG signal")
 
@@ -89,19 +88,18 @@ channel2 = remove_artifacts_by_amplitude(channel2)
 #646750 to 647250
 #970500 to 971000
 
-#????? or just a bit noisy
-# check it out after butterworth
-#688750 to 690000
+#????? idk
 #694000 to 695000
 #723250 to 723750
 #979500 to 984000
+#688700 to 690000
 
 #data balancing
 #butterworth filter
 
 #plot_sig(channel1, channel2, "ECG signal without amplitude artifacts")
 
-'''NORMALIZATION + BASELINE FITTING:'''
+'''NORMALIZATION + BUTTERWORTH + BASELINE FITTING:'''
 #plot_sig(channel1, channel2, "Original ECG signal")
 
 processed_list = []
@@ -114,7 +112,24 @@ max2 = np.max(channel2)
 ch1_norm = (channel1 - min1) / (max1 - min1)
 ch2_norm = (channel2 - min2) / (max2 - min2)
 
-#plot_sig(ch1_norm, ch2_norm, "Normalized ECG signal")
+plot_sig(ch1_norm, ch2_norm, "Normalized ECG signal")
+
+'''filter 30Hz'''
+fs = 360
+lowcut = 0.5 #does this also help with baseline wander? not satisfactory tho
+highcut = 40.0 #lower = smoother. 50 -> not denoising enough, 30 -> losing ecg info
+
+#get documentation for these functions
+nyquist = 0.5 * fs #nyquist freq: remind what this is
+low = lowcut / nyquist
+high = highcut / nyquist
+b, a = butter(5, [low, high], btype='band')
+ch1_norm_butter = filtfilt(b, a, ch1_norm)
+ch2_norm_butter = filtfilt(b, a, ch2_norm)
+
+plot_sig(ch1_norm_butter, ch2_norm_butter, "butterworth filtered ECG signal")
+
+#also try inverse FFT
 
 '''
 The medfilt function, short for "median filter," is a method used in signal processing to reduce noise in a signal. It replaces each data point with the median value in its neighboring window. This helps smooth out the signal while preserving sharp edges and important features.
@@ -133,15 +148,13 @@ if the baseline variations are high-frequency or rapid, a smaller kernel size mi
 #small kernel size just made the line worse
 #but test this again later to see the exact effects
 
-for channel in [ch1_norm, ch2_norm]:
+for channel in [ch1_norm_butter, ch2_norm_butter]:
   X0 = channel  # Read original signal
   X0 = medfilt(X0, 101)  # Apply median filter one by one on top of each other
   res = np.subtract(channel,X0)
   processed_list.append(res)
 
-#plot_sig(processed_list[0], processed_list[1], "Baseline fitted ECG signal")
-
-'''BUTTERWORTH FILTER FOR 30Hz(?) COMING SOON'''
+plot_sig(processed_list[0], processed_list[1], "Baseline fitted + butter ECG signal")
 
 #train/test split
 train_size = int(0.7 * len(data212))
