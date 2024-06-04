@@ -6,6 +6,10 @@ from collections import Counter
 import numpy as np
 from model import CNNModel
 
+# DATA SPLIT
+# DATA NORMALIZATION
+# DATA BALANCING
+
 
 
 WINDOW_SIZE = 200
@@ -83,6 +87,11 @@ if __name__ == "__main__":
 
     
     split_norm(prep, patient, signal1_windows, signal2_windows, annotation_windows)
+
+
+    #TODO: don't forget to do DATA BALANCING HERE BEFORE TRAINING MODEL
+    #TODO: also don't forget to do any other preprocessing needed
+
 
 
     ####################### Training the Model ########################################

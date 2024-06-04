@@ -1,7 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv1D, MaxPooling1D, Flatten, Dense, Dropout, concatenate
-from tensorflow.keras.utils import to_categorical
 
 class CNNModel:
     def __init__(self, input_shape1, input_shape2, num_classes, activation, optimizer, loss):
