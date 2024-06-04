@@ -21,11 +21,11 @@ TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
 
 if __name__ == "__main__":
-    p_212 = Visualization(212)
+    patient = Visualization(212)
     #p_212.multi_plot_label()
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
-    prep = Preprocessing(p_212.record, p_212.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS)
+    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS)
 
     # Example usage
     if DO_PREPROCESSING is True:
@@ -51,14 +51,23 @@ if __name__ == "__main__":
     prep.split_data(signal1_windows, signal2_windows, annotation_windows, TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
 
     # Plotting each signal individually from train, validation and test
-    p_212.plot_1_signal(prep.signal1.train, prep.labels.train, title="Training Data", filename="s1_training_data.png")
-    p_212.plot_1_signal(prep.signal1.val, prep.labels.val, title="Validation Data", filename="s1_validation_data.png")
-    p_212.plot_1_signal(prep.signal1.test, prep.labels.test, title="Test Data", filename="s1_test_data.png")
+    patient.plot_1_signal(prep.signal1.train, prep.labels.train, title="Signal 1 Training Data", filename="s1_train.png")
+    patient.plot_1_signal(prep.signal1.val, prep.labels.val, title="Signal 1 Validation Data", filename="s1_val.png")
+    patient.plot_1_signal(prep.signal1.test, prep.labels.test, title="Signal 1 Test Data", filename="s1_test.png")
 
-    p_212.plot_1_signal(prep.signal2.train, prep.labels.train, title="Training Data", filename="s2_training_data.png")
-    p_212.plot_1_signal(prep.signal2.val, prep.labels.val, title="Validation Data", filename="s2_validation_data.png")
-    p_212.plot_1_signal(prep.signal2.test, prep.labels.test, title="Test Data", filename="s2_test_data.png")
+    patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data", filename="s2_train.png")
+    patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data", filename="s2_val.png")
+    patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data", filename="s2_test.png")
 
     annotation_counts = Counter(annotation_windows)
     print(annotation_counts)
 
+    prep.normalize_minmax()
+
+    patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 1 Training Data Normalized", filename="s1_train_norm.png")
+    patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 1 Validation Data Normalized", filename="s1_val_norm.png")
+    patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 1 Test Data Normalized", filename="s1_test_norm.png")
+
+    patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data Normalized", filename="s2_train_norm.png")
+    patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data Normalized", filename="s2_val_norm.png")
+    patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data Normalized", filename="s2_test_norm.png")

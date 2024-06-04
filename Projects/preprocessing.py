@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 class Preprocessing():
 
@@ -68,6 +69,25 @@ class Preprocessing():
         self.signal1 = Data_Info(train_signal1, val_signal1, test_signal1)
         self.signal2 = Data_Info(train_signal2, val_signal2, test_signal2)
         self.labels = Data_Info(train_labels, val_labels, test_labels)
+
+
+    def normalize_minmax(self):
+        '''
+        1. Identify the min and max
+        2. apply the transformation: (x - min) / (max - min)
+        3. we get values between 1 and 0
+        '''
+        scaler_signal1 = MinMaxScaler()
+        scaler_signal2 = MinMaxScaler()
+
+        self.signal1.train = scaler_signal1.fit_transform(self.signal1.train.reshape(-1, self.signal1.train.shape[-1])).reshape(self.signal1.train.shape)
+        self.signal1.val = scaler_signal1.transform(self.signal1.val.reshape(-1, self.signal1.val.shape[-1])).reshape(self.signal1.val.shape)
+        self.signal1.test = scaler_signal1.transform(self.signal1.test.reshape(-1, self.signal1.test.shape[-1])).reshape(self.signal1.test.shape)
+
+        self.signal2.train = scaler_signal2.fit_transform(self.signal2.train.reshape(-1, self.signal2.train.shape[-1])).reshape(self.signal2.train.shape)
+        self.signal2.val = scaler_signal2.transform(self.signal2.val.reshape(-1, self.signal2.val.shape[-1])).reshape(self.signal2.val.shape)
+        self.signal2.test = scaler_signal2.transform(self.signal2.test.reshape(-1, self.signal2.test.shape[-1])).reshape(self.signal2.test.shape)
+
     
 class Data_Info():
     def __init__(self, train, val, test):
