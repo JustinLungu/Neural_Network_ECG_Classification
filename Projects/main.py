@@ -27,7 +27,7 @@ VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
 MODEL_NAME = "model"
-EPOCHS = 3
+EPOCHS = 20
 BATCH_SIZE = 32
 OPTIMIZER = 'adam'
 LOSS = 'binary_crossentropy'
