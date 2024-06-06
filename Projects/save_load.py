@@ -2,6 +2,7 @@ import json
 import pandas as pd
 import os
 import numpy as np
+import tensorflow as tf
 
 class Save():
 
@@ -63,6 +64,30 @@ class Save():
         
         print(f"Data saved to {signal1_csv_path}, {signal2_csv_path}, and {annotations_csv_path}")
 
+    
+
+class Model_Save_Load():
+    def __init__(self, p_number, model_name):
+        self.p_number = str(p_number)
+        self.model_path = '../Neural_Network_ECG_Classification/Models/'
+        self.model_name = model_name
+
+        # Create the directory if it doesn't exist
+        if not os.path.exists(self.model_path):
+            os.makedirs(self.model_path)
+
+    def save_model(self, model):
+        model_save_path = os.path.join(self.model_path, self.model_name)
+        model.save(model_save_path)
+        print(f"Model saved to {model_save_path}")
+
+    def load_model(self):
+        model_load_path = os.path.join(self.model_path, self.model_name)
+        model = tf.keras.models.load_model(model_load_path)
+        print(f"Model loaded from {model_load_path}")
+        return model
+
+
 
 class Load():
 
@@ -99,3 +124,7 @@ class Load():
 
         print(f"Data loaded from {signal1_csv_path}, {signal2_csv_path}, and {annotations_csv_path}")
         return signal1_windows, signal2_windows, annotation_windows
+
+
+
+    

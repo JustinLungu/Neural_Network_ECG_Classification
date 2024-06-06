@@ -1,6 +1,6 @@
 from visualization import Visualization
 from preprocessing import Preprocessing
-from save_load import Save, Load
+from save_load import Save, Load, Model_Save_Load
 import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
@@ -11,7 +11,7 @@ from model import CNNModel
 # DATA NORMALIZATION
 # DATA BALANCING
 
-
+PATIENT_NUMBER = 212
 
 WINDOW_SIZE = 200
 OVERLAP = 0.5 #0.5 = 50%
@@ -20,12 +20,14 @@ NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {'~', '+', '|'}
 
 DO_PREPROCESSING = False
+DO_TRAINING = False
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
-EPOCHS = 20
+MODEL_NAME = "model.h5"
+EPOCHS = 5
 BATCH_SIZE = 32
 OPTIMIZER = 'adam'
 LOSS = 'binary_crossentropy'
@@ -60,7 +62,7 @@ def split_balance_norm(prep: Preprocessing, patient: Visualization, signal1_wind
     
 
 if __name__ == "__main__":
-    patient = Visualization(212)
+    patient = Visualization(PATIENT_NUMBER)
     #p_212.multi_plot_label()
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
@@ -77,12 +79,12 @@ if __name__ == "__main__":
         annotation_counts = Counter(annotation_windows)
         print(annotation_counts)
 
-        save = Save(212, signal1_windows, signal2_windows, annotation_windows)
+        save = Save(PATIENT_NUMBER, signal1_windows, signal2_windows, annotation_windows)
         save.save_data_json()
         save.save_data_csv()
         
     else:
-        load = Load(212)
+        load = Load(PATIENT_NUMBER)
         signal1_windows, signal2_windows, annotation_windows = load.load_data_json()
         signal1_windows_c, signal2_windows_c, annotation_windows_c = load.load_data_csv()
 
@@ -92,8 +94,8 @@ if __name__ == "__main__":
 
     #TODO: also don't forget to do any other preprocessing needed
 
-
-    '''
+    
+    
     ####################### Training the Model ########################################
     train_data = [prep.signal1.train, prep.signal2.train]
     val_data = [prep.signal1.val, prep.signal2.val]
@@ -106,11 +108,20 @@ if __name__ == "__main__":
     val_labels = np.vectorize(label_mapping.get)(prep.labels.val)
     test_labels = np.vectorize(label_mapping.get)(prep.labels.test)
 
-    # Initialize and train the model
-    cnn_model = CNNModel(train_data[0].shape[1:], train_data[1].shape[1:], NUM_CLASSES, ACTIVATION, OPTIMIZER, LOSS)
-    cnn_model.train(train_data, train_labels, val_data, val_labels, EPOCHS, BATCH_SIZE)
+    sl_model = Model_Save_Load(PATIENT_NUMBER, MODEL_NAME)
+
+    if DO_TRAINING == True:
+        # Initialize and train the model
+        cnn_model = CNNModel(train_data[0].shape[1:], train_data[1].shape[1:], NUM_CLASSES, ACTIVATION, OPTIMIZER, LOSS)
+        cnn_model.train(train_data, train_labels, val_data, val_labels, EPOCHS, BATCH_SIZE)
+
+        #saving the model
+        sl_model.save_model(cnn_model.model)
+    else:
+        #lod model
+        cnn_model = sl_model.load_model()
 
     # Evaluate the model
     test_loss, test_accuracy = cnn_model.evaluate(test_data, test_labels)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
-    '''
+    
