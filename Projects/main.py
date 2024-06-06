@@ -20,7 +20,7 @@ NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {'~', '+', '|'}
 
 DO_PREPROCESSING = False
-DO_TRAINING = False
+DO_TRAINING = True
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
@@ -118,7 +118,8 @@ if __name__ == "__main__":
         #saving the model
         sl_model.save_model_h5(cnn_model.model)
         sl_model.save_model_pkl(cnn_model.model)
-        sl_model.save_model_tflite(cnn_model.model)
+        #WARNING: Does not work with tensorflow 2.16 but does work with 2.15
+        #sl_model.save_model_tflite(cnn_model.model)
         
 
     else:

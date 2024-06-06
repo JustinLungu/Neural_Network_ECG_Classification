@@ -83,16 +83,13 @@ class Model_Save_Load():
         print(f"Model saved to {model_save_path_h5}")
 
     def save_model_tflite(self, model):
-        # Convert and save as .tflite
-        try:
-            converter = tf.lite.TFLiteConverter.from_keras_model(model)
-            tflite_model = converter.convert()
-            model_save_path_tflite = os.path.join(self.model_path, self.model_name + ".tflite")
-            with open(model_save_path_tflite, "wb") as f:
-                f.write(tflite_model)
-            print(f"Model saved to {model_save_path_tflite}")
-        except Exception as e:
-            print(f"Failed to save model as TFLite: {e}")
+        # Save as .tflite
+        tflite_filepath = os.path.join(self.model_path, "autoencoder_model.tflite")
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        tflite_model = converter.convert()
+        with open(tflite_filepath, 'wb') as f:
+            f.write(tflite_model)
+        return tflite_model
 
     def save_model_pkl(self, model):
         pkl_filepath = os.path.join(self.model_path, self.model_name + ".pkl")
