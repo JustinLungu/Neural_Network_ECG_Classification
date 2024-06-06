@@ -2,14 +2,17 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+from imblearn.over_sampling import SMOTE
+from collections import Counter
 
 class Preprocessing():
 
-    def __init__(self, record, annotation, valid, invalid):
+    def __init__(self, record, annotation, valid, invalid, window_size):
         self.record = record
         self.annotation = annotation
         self.valid_annotations = valid
         self.invalid_annotations = invalid
+        self.window_size = window_size
 
         self.signal1 = None
         self.signal2 = None
@@ -69,6 +72,34 @@ class Preprocessing():
         self.signal1 = Data_Info(train_signal1, val_signal1, test_signal1)
         self.signal2 = Data_Info(train_signal2, val_signal2, test_signal2)
         self.labels = Data_Info(train_labels, val_labels, test_labels)
+
+        # check the distribution of classes in each subset
+        print("Distribution in training set:", Counter(train_labels))
+        print("Distribution in validation set:", Counter(val_labels))
+        print("Distribution in test set:", Counter(test_labels))
+
+    def balance_data(self):
+        smote = SMOTE(random_state=42)
+
+        print("Before balancing:")
+        print(Counter(self.labels.train))
+
+        #reshape from 3D (samples, window, channels) to 2D (samples, window * channels)
+        n_samples, window_size, n_channels = self.signal1.train.shape
+        signal1_2d = self.signal1.train.reshape(n_samples, -1)
+        signal2_2d = self.signal2.train.reshape(n_samples, -1)
+
+        #apply smote: it expects data that has shape <= 2
+        signal1_balanced, labels_balanced = smote.fit_resample(signal1_2d, self.labels.train)
+        signal2_balanced, _ = smote.fit_resample(signal2_2d, self.labels.train)
+
+        print("After balancing:")
+        print(Counter(labels_balanced)) 
+
+        # eeshape signals back to normal
+        self.signal1.train = signal1_balanced.reshape(-1, window_size, n_channels)
+        self.signal2.train = signal2_balanced.reshape(-1, window_size, n_channels)
+        self.labels.train = labels_balanced
 
 
     def normalize_minmax(self):

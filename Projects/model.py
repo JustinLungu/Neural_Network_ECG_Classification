@@ -18,31 +18,31 @@ class CNNModel:
         self.model = self.build_model()
 
     def build_model(self):
-        # Input layers
+        #input layers
         input1 = Input(shape=self.input_shape1)
         input2 = Input(shape=self.input_shape2)
 
-        # First branch for signal1
+        #branch for signal1
         x1 = Conv1D(filters = 32, kernel_size = 3, activation='relu')(input1)
         x1 = MaxPooling1D(pool_size = 2)(x1)
         x1 = Conv1D(filters = 64, kernel_size = 3, activation='relu')(x1)
         x1 = MaxPooling1D(pool_size = 2)(x1)
         x1 = Flatten()(x1)
 
-        # Second branch for signal2
+        #branch for signal2
         x2 = Conv1D(filters = 32, kernel_size = 3, activation='relu')(input2)
         x2 = MaxPooling1D(pool_size = 2)(x2)
         x2 = Conv1D(filters = 64, kernel_size = 3, activation='relu')(x2)
         x2 = MaxPooling1D(pool_size = 2)(x2)
         x2 = Flatten()(x2)
 
-        # Concatenate both branches
+        #concatenate both branches
         x = concatenate([x1, x2])
         x = Dense(128, activation='relu')(x)
         x = Dropout(0.5)(x)
         output = Dense(self.num_classes, activation = self.activation)(x)
 
-        # Create model
+        #model
         model = Model(inputs=[input1, input2], outputs=output)
         model.compile(optimizer = self.optimizer, loss = self.loss, metrics=['accuracy'])
         return model

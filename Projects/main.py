@@ -6,6 +6,7 @@ from collections import Counter
 import numpy as np
 from model import CNNModel
 
+
 # DATA SPLIT
 # DATA NORMALIZATION
 # DATA BALANCING
@@ -30,7 +31,7 @@ OPTIMIZER = 'adam'
 LOSS = 'binary_crossentropy'
 ACTIVATION = 'sigmoid'
 
-def split_norm(prep: Preprocessing, patient: Visualization, signal1_windows, signal2_windows, annotation_windows):
+def split_balance_norm(prep: Preprocessing, patient: Visualization, signal1_windows, signal2_windows, annotation_windows):
     # Split the data
     prep.split_data(signal1_windows, signal2_windows, annotation_windows, TRAIN_RATIO, VAL_RATIO, TEST_RATIO)
 
@@ -43,7 +44,8 @@ def split_norm(prep: Preprocessing, patient: Visualization, signal1_windows, sig
     # patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data", filename="s2_train.png")
     # patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data", filename="s2_val.png")
     # patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data", filename="s2_test.png")
-    
+
+    prep.balance_data()
 
     prep.normalize_minmax()
 
@@ -55,15 +57,14 @@ def split_norm(prep: Preprocessing, patient: Visualization, signal1_windows, sig
     # patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data Normalized", filename="s2_val_norm.png")
     # patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data Normalized", filename="s2_test_norm.png")
 
-    annotation_counts = Counter(annotation_windows)
-    print(annotation_counts)
+    
 
 if __name__ == "__main__":
     patient = Visualization(212)
     #p_212.multi_plot_label()
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
-    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS)
+    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS, WINDOW_SIZE)
 
     # Example usage
     if DO_PREPROCESSING is True:
@@ -86,14 +87,13 @@ if __name__ == "__main__":
         signal1_windows_c, signal2_windows_c, annotation_windows_c = load.load_data_csv()
 
     
-    split_norm(prep, patient, signal1_windows, signal2_windows, annotation_windows)
+    split_balance_norm(prep, patient, signal1_windows, signal2_windows, annotation_windows)
+    
 
-
-    #TODO: don't forget to do DATA BALANCING HERE BEFORE TRAINING MODEL
     #TODO: also don't forget to do any other preprocessing needed
 
 
-
+    '''
     ####################### Training the Model ########################################
     train_data = [prep.signal1.train, prep.signal2.train]
     val_data = [prep.signal1.val, prep.signal2.val]
@@ -113,3 +113,4 @@ if __name__ == "__main__":
     # Evaluate the model
     test_loss, test_accuracy = cnn_model.evaluate(test_data, test_labels)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
+    '''
