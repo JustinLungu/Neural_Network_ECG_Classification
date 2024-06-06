@@ -3,13 +3,13 @@ import pandas as pd
 import os
 import numpy as np
 import tensorflow as tf
+import joblib
 
 class Save():
 
     def __init__(self, p_number, signal1, signal2, annotation):
         self.p_number = str(p_number)
         self.data_path = '../Neural_Network_ECG_Classification/Collected_Data/patient_' + str(p_number) + '/'
-        self.model_path = '../Neural_Network_ECG_Classification/Models/'
         self.signal1 = signal1
         self.signal2 = signal2
         self.annotation = annotation
@@ -76,15 +76,48 @@ class Model_Save_Load():
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
-    def save_model(self, model):
-        model_save_path = os.path.join(self.model_path, self.model_name)
-        model.save(model_save_path)
-        print(f"Model saved to {model_save_path}")
+    def save_model_h5(self, model):
+        # Save as .h5
+        model_save_path_h5 = os.path.join(self.model_path, self.model_name + ".h5")
+        model.save(model_save_path_h5)
+        print(f"Model saved to {model_save_path_h5}")
 
-    def load_model(self):
-        model_load_path = os.path.join(self.model_path, self.model_name)
-        model = tf.keras.models.load_model(model_load_path)
-        print(f"Model loaded from {model_load_path}")
+    def save_model_tflite(self, model):
+        # Convert and save as .tflite
+        try:
+            converter = tf.lite.TFLiteConverter.from_keras_model(model)
+            tflite_model = converter.convert()
+            model_save_path_tflite = os.path.join(self.model_path, self.model_name + ".tflite")
+            with open(model_save_path_tflite, "wb") as f:
+                f.write(tflite_model)
+            print(f"Model saved to {model_save_path_tflite}")
+        except Exception as e:
+            print(f"Failed to save model as TFLite: {e}")
+
+    def save_model_pkl(self, model):
+        pkl_filepath = os.path.join(self.model_path, self.model_name + ".pkl")
+        joblib.dump(model, pkl_filepath)
+        print(f"Model saved to {pkl_filepath}")
+
+    def load_model_h5(self):
+        model_load_path_h5 = os.path.join(self.model_path, self.model_name + ".h5")
+        model = tf.keras.models.load_model(model_load_path_h5)
+        print(f"Model loaded from {model_load_path_h5}")
+        return model
+
+    def load_model_tflite(self):
+        model_load_path_tflite = os.path.join(self.model_path, self.model_name + ".tflite")
+        with open(model_load_path_tflite, "rb") as f:
+            tflite_model = f.read()
+        interpreter = tf.lite.Interpreter(model_content=tflite_model)
+        interpreter.allocate_tensors()
+        print(f"Model loaded from {model_load_path_tflite}")
+        return interpreter
+
+    def load_model_pkl(self):
+        pkl_filepath = os.path.join(self.model_path, self.model_name + ".pkl")
+        model = joblib.load(pkl_filepath)
+        print(f"Model loaded from {pkl_filepath}")
         return model
 
 
@@ -94,7 +127,6 @@ class Load():
     def __init__(self, p_number):
         self.p_number = str(p_number)
         self.data_path = '../Neural_Network_ECG_Classification/Collected_Data/patient_' + self.p_number + '/'
-        self.model_path = '../Neural_Network_ECG_Classification/Models/'
 
     def load_data_json(self):
         file = "ecg_data_" + self.p_number + ".json"

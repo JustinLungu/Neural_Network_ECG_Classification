@@ -26,8 +26,8 @@ TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
-MODEL_NAME = "model.h5"
-EPOCHS = 5
+MODEL_NAME = "model"
+EPOCHS = 3
 BATCH_SIZE = 32
 OPTIMIZER = 'adam'
 LOSS = 'binary_crossentropy'
@@ -116,10 +116,14 @@ if __name__ == "__main__":
         cnn_model.train(train_data, train_labels, val_data, val_labels, EPOCHS, BATCH_SIZE)
 
         #saving the model
-        sl_model.save_model(cnn_model.model)
+        sl_model.save_model_h5(cnn_model.model)
+        sl_model.save_model_pkl(cnn_model.model)
+        sl_model.save_model_tflite(cnn_model.model)
+        
+
     else:
         #lod model
-        cnn_model = sl_model.load_model()
+        cnn_model = sl_model.load_model_h5()
 
     # Evaluate the model
     test_loss, test_accuracy = cnn_model.evaluate(test_data, test_labels)
