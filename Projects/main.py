@@ -1,18 +1,11 @@
 from visualization import Visualization
 from preprocessing import Preprocessing
 from save_load import Save, Load, Model_Save_Load
-import matplotlib.pyplot as plt
 from collections import Counter
 import numpy as np
 from model import CNNModel
 
-
-# DATA SPLIT
-# DATA NORMALIZATION
-# DATA BALANCING
-
 PATIENT_NUMBER = 212
-
 WINDOW_SIZE = 200
 OVERLAP = 0.5 #0.5 = 50%
 VALID_ANNOTATIONS = {'N', 'R'}
@@ -123,7 +116,7 @@ if __name__ == "__main__":
         
 
     else:
-        #lod model
+        #load model
         cnn_model = sl_model.load_model_h5()
 
     # Evaluate the model
