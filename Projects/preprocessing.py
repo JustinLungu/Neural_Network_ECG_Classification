@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 from imblearn.over_sampling import SMOTE
 from collections import Counter
+from scipy.signal import medfilt, butter, filtfilt, iirnotch
 
 class Preprocessing():
 
@@ -14,8 +15,8 @@ class Preprocessing():
         self.invalid_annotations = invalid
         self.window_size = window_size
 
-        self.signal1 = None
-        self.signal2 = None
+        self.signal1 = self.record.p_signal[:, 0].flatten()
+        self.signal2 = self.record.p_signal[:, 1].flatten()
         self.labels = None
 
     def extract_windows(self, window_size, overlap):
@@ -46,7 +47,31 @@ class Preprocessing():
             annotation_windows.append(majority_annotation)
 
         return np.array(data_windows), np.array(annotation_windows)
-    
+
+    def butterworth(self, fs, lowcut, highcut):
+        nyquist = 0.5 * fs
+        low = lowcut / nyquist
+        high = highcut / nyquist
+        b, a = butter(5, [low, high], btype='band')
+        self.signal1 = filtfilt(b, a, self.signal1)
+        self.signal2 = filtfilt(b, a, self.signal2)
+
+    def baseline_fitting(self):
+        processed_list = []
+        for channel in [self.signal1, self.signal2]:
+            X0 = channel
+            X0 = medfilt(X0, 101)
+            res = np.subtract(channel, X0)
+            processed_list.append(res)
+        self.signal1 = processed_list[0]
+        self.signal2 = processed_list[1]
+
+    def remove_artifacts(self):
+        pass
+
+    def remove_high_low(self):
+        pass
+
     def split_data(self, signal1, signal2, labels, train_r, val_r, test_r, random_state=42):
         assert train_r + val_r + test_r == 1, "The sum of train_r, val_r, and test_r must be 1."
 

@@ -12,8 +12,12 @@ VALID_ANNOTATIONS = {'N', 'R'}
 NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {'~', '+', '|'}
 
-DO_PREPROCESSING = False
-DO_TRAINING = True
+DO_PREPROCESSING = True
+DO_TRAINING = False
+
+SAMPLING_RATE = 360
+LOWCUT = 0.5
+HIGHCUT = 40.0
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
@@ -52,7 +56,6 @@ def split_balance_norm(prep: Preprocessing, patient: Visualization, signal1_wind
     # patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data Normalized", filename="s2_val_norm.png")
     # patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data Normalized", filename="s2_test_norm.png")
 
-    
 
 if __name__ == "__main__":
     patient = Visualization(PATIENT_NUMBER)
@@ -63,7 +66,10 @@ if __name__ == "__main__":
 
     # Example usage
     if DO_PREPROCESSING is True:
-        
+        prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
+        prep.baseline_fitting()
+
+        prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
         data_windows, annotation_windows = prep.extract_windows(WINDOW_SIZE, OVERLAP)
         signal1_windows = data_windows[:, :, 0:1]
         signal2_windows = data_windows[:, :, 1:2]

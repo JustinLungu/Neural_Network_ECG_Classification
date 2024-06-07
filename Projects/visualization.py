@@ -10,6 +10,8 @@ class Visualization():
         self.p_number = p_number
         self.data_path = '../Neural_Network_ECG_Classification/Collected_Data/patient_' + str(p_number) + '/'
         self.plots_path = '../Neural_Network_ECG_Classification/Projects/Plots/'
+        #self.data_path = '../Collected_Data/patient_' + str(p_number) + '/'
+        #self.plots_path = '../Projects/Plots/'
         self.valid_annotations = {'N', 'A', 'V', 'f', 'x', 'L', 'R', 'F', '/', '~', 'Q', 'j', 'a', 'J', '!', 'E', 'S', '"', 'e'}
         self.record = wfdb.rdrecord(self.data_path + str(self.p_number))
         self.annotation = wfdb.rdann(self.data_path + str(self.p_number), 'atr')
@@ -17,6 +19,7 @@ class Visualization():
     def _save_plot(self, filename):
         # Create the directory if it doesn't exist
         save_dir = '../Neural_Network_ECG_Classification/Projects/Plots/'
+        #save_dir = '../Projects/Plots/'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
         
