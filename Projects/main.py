@@ -19,6 +19,13 @@ SAMPLING_RATE = 360
 LOWCUT = 0.5
 HIGHCUT = 40.0
 
+#there are also some especially noisy sections, but they are long
+#if we removed them, we will lose data
+#400000 - 406000
+#578300 - 581200
+ARTIFACTS = [[232000, 232600], [252250, 252700], [375600, 375750],
+             [502300, 503000], [572500, 572750], [580800, 581200]]
+
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
@@ -58,18 +65,25 @@ def split_balance_norm(prep: Preprocessing, patient: Visualization, signal1_wind
 
 
 if __name__ == "__main__":
-    patient = Visualization(PATIENT_NUMBER)
-    #p_212.multi_plot_label()
+    patient = Visualization(PATIENT_NUMBER, 1)
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
-    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS, WINDOW_SIZE)
+    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS, WINDOW_SIZE, ARTIFACTS)
 
     # Example usage
     if DO_PREPROCESSING is True:
+        patient.plot_all()
         prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
         prep.baseline_fitting()
 
         prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
+        patient.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
+        #patient.multi_plot_label()
+        #patient.plot_all()s
+
+        '''Turns out removing very high/very low amplitudes is not that necessary 
+        after applying Butterworth filtering and baseling fitting so this was not implemented.'''
+
         data_windows, annotation_windows = prep.extract_windows(WINDOW_SIZE, OVERLAP)
         signal1_windows = data_windows[:, :, 0:1]
         signal2_windows = data_windows[:, :, 1:2]
@@ -89,12 +103,7 @@ if __name__ == "__main__":
 
     
     split_balance_norm(prep, patient, signal1_windows, signal2_windows, annotation_windows)
-    
 
-    #TODO: also don't forget to do any other preprocessing needed
-
-    
-    
     ####################### Training the Model ########################################
     train_data = [prep.signal1.train, prep.signal2.train]
     val_data = [prep.signal1.val, prep.signal2.val]
@@ -128,4 +137,3 @@ if __name__ == "__main__":
     # Evaluate the model
     test_loss, test_accuracy = cnn_model.evaluate(test_data, test_labels)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
-    
