@@ -6,7 +6,7 @@ authors = ["Frano Rajkovic <f.rajkovic@student.rug.nl>", "Iustin Lungu <iustinl1
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 wfdb = "^4.1.2"
 ipykernel = "^6.29.4"
 numpy = "<2.0.0"
