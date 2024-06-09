@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "neural-network-ecg-classification"
+version = "0.1.0"
+description = "Neural Networks Project: Classifying pathological heartbeats from ECG signals"
+authors = ["Frano Rajkovic <f.rajkovic@student.rug.nl>", "Iustin Lungu <iustinl113@gmail.com>", "Nico Andone <i.d.andone@student.rug.nl>", "Alexia Neatu <lexineatu@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+wfdb = "^4.1.2"
+ipykernel = "^6.29.4"
+numpy = "<2.0.0"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
