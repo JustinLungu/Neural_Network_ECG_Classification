@@ -22,10 +22,17 @@ HIGHCUT = 40.0
 
 #there are also some especially noisy sections, but they are long
 #if we removed them, we will lose data
+##################################################################################################
+'''
+it was recommended by the professor to not remove manually the artifacts unless we find a way to 
+automate the artifact removal as we would need to keep these artifacts in the testing data if we are to 
+deploy to real life this project.
+'''
 #400000 - 406000
 #578300 - 581200
 #ARTIFACTS = [[232000, 232600], [252250, 252700], [375600, 375750],
 #             [502300, 503000], [572500, 572750], [580800, 581200]]
+####################################################################################################
 ARTIFACTS = []
 
 TRAIN_RATIO = 0.7
