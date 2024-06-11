@@ -8,6 +8,16 @@ from scipy.signal import medfilt, butter, filtfilt, iirnotch
 
 class Preprocessing():
 
+
+    def __init__(self, record, annotation, valid, invalid, artifacts):
+        self.record = record
+        self.annotation = annotation
+        self.valid_annotations = valid
+        self.invalid_annotations = invalid
+
+        self.artifacts = artifacts
+
+    '''
     def __init__(self, record, annotation, valid, invalid, window_size, artifacts):
         self.record = record
         self.annotation = annotation
@@ -16,9 +26,11 @@ class Preprocessing():
         self.window_size = window_size
         self.artifacts = artifacts
 
-        self.signal1 = self.record.p_signal[:, 0].flatten()
-        self.signal2 = self.record.p_signal[:, 1].flatten()
-        self.labels = None
+        #self.signal1 = self.record.p_signal[:, 0].flatten()
+        #self.signal2 = self.record.p_signal[:, 1].flatten()
+        #self.labels = None
+
+    '''
 
     def is_artifact(self, start, end):
         """Check if the window falls within any of the intervals to remove."""
@@ -26,6 +38,7 @@ class Preprocessing():
             if start < art_end or end > art_start:
                 return True
         return False
+
 
     def extract_windows(self, window_size, overlap):
         step_size = int(window_size * (1 - overlap))
@@ -35,10 +48,6 @@ class Preprocessing():
         for start in range(0, len(self.record.p_signal) - window_size + 1, step_size):
             end = start + window_size
             window = self.record.p_signal[start:end]
-
-            # Skip windows that fall within intervals to remove
-            if self.is_artifact(start, end):
-                continue
 
             # Get the annotations in the current window
             annotations_in_window = self.annotation.sample[(self.annotation.sample >= start) & (self.annotation.sample < end)]

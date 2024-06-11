@@ -13,7 +13,7 @@ NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {'~', '+', '|'}
 
 DO_PREPROCESSING = True
-DO_TRAINING = False
+DO_TRAINING = True
 
 SAMPLING_RATE = 360
 LOWCUT = 0.5
@@ -68,16 +68,16 @@ if __name__ == "__main__":
     patient = Visualization(PATIENT_NUMBER, 1)
     #p_212.plot_annotation_sep_channels()
     #p_212.plot_annotation_signals()
-    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS, WINDOW_SIZE, ARTIFACTS)
+    prep = Preprocessing(patient.record, patient.annotation, VALID_ANNOTATIONS, INVALID_ANNOTATIONS, ARTIFACTS)
 
     # Example usage
     if DO_PREPROCESSING is True:
-        patient.plot_all()
-        prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
-        prep.baseline_fitting()
+        #patient.plot_all()
+        #prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
+        #prep.baseline_fitting()
 
-        prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
-        patient.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
+        #prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
+        #patient.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
         #patient.multi_plot_label()
         #patient.plot_all()s
 
@@ -85,6 +85,7 @@ if __name__ == "__main__":
         after applying Butterworth filtering and baseling fitting so this was not implemented.'''
 
         data_windows, annotation_windows = prep.extract_windows(WINDOW_SIZE, OVERLAP)
+        print(len(data_windows))
         signal1_windows = data_windows[:, :, 0:1]
         signal2_windows = data_windows[:, :, 1:2]
         
