@@ -48,7 +48,8 @@ class CNNModel:
         return model
 
     def train(self, train_data, train_labels, val_data, val_labels, epochs, batch_size):
-        self.model.fit(train_data, train_labels, validation_data=(val_data, val_labels), epochs=epochs, batch_size=batch_size)
+        history = self.model.fit(train_data, train_labels, validation_data=(val_data, val_labels), epochs=epochs, batch_size=batch_size)
+        return history
 
     def evaluate(self, test_data, test_labels):
         return self.model.evaluate(test_data, test_labels)

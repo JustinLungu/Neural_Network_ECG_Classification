@@ -4,6 +4,7 @@ from save_load import Save, Load, Model_Save_Load
 from collections import Counter
 import numpy as np
 from model import CNNModel
+from evaluation import Evaluation
 
 PATIENT_NUMBER = 212
 WINDOW_SIZE = 200
@@ -23,8 +24,9 @@ HIGHCUT = 40.0
 #if we removed them, we will lose data
 #400000 - 406000
 #578300 - 581200
-ARTIFACTS = [[232000, 232600], [252250, 252700], [375600, 375750],
-             [502300, 503000], [572500, 572750], [580800, 581200]]
+#ARTIFACTS = [[232000, 232600], [252250, 252700], [375600, 375750],
+#             [502300, 503000], [572500, 572750], [580800, 581200]]
+ARTIFACTS = []
 
 TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
@@ -93,8 +95,8 @@ if __name__ == "__main__":
         print(annotation_counts)
 
         save = Save(PATIENT_NUMBER, signal1_windows, signal2_windows, annotation_windows)
-        #save.save_data_json()
-        #save.save_data_csv()
+        save.save_data_json()
+        save.save_data_csv()
         
     else:
         load = Load(PATIENT_NUMBER)
@@ -121,19 +123,34 @@ if __name__ == "__main__":
     if DO_TRAINING == True:
         # Initialize and train the model
         cnn_model = CNNModel(train_data[0].shape[1:], train_data[1].shape[1:], NUM_CLASSES, ACTIVATION, OPTIMIZER, LOSS)
-        cnn_model.train(train_data, train_labels, val_data, val_labels, EPOCHS, BATCH_SIZE)
+        model_history = cnn_model.train(train_data, train_labels, val_data, val_labels, EPOCHS, BATCH_SIZE)
 
         #saving the model
         sl_model.save_model_h5(cnn_model.model)
         sl_model.save_model_pkl(cnn_model.model)
         #WARNING: Does not work with tensorflow 2.16 but does work with 2.15
         #sl_model.save_model_tflite(cnn_model.model)
+
+        evaluation = Evaluation(model_history) 
+        evaluation.plot_loss()
         
 
     else:
         #load model
+        evaluation = Evaluation(None)
         cnn_model = sl_model.load_model_h5()
 
     # Evaluate the model
     test_loss, test_accuracy = cnn_model.evaluate(test_data, test_labels)
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
+
+
+    # Make predictions
+    test_predictions = cnn_model.model.predict(test_data)
+    test_predictions = np.round(test_predictions).astype(int)
+
+    # Calculate F1 Score
+    f1 = evaluation.calculate_f1_score(test_labels, test_predictions)
+
+    # Plot confusion matrix
+    evaluation.plot_confusion_matrix(test_labels, test_predictions, labels=['N', 'R'])
