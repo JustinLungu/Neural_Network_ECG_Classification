@@ -31,7 +31,7 @@ VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
 MODEL_NAME = "model"
-EPOCHS = 20
+EPOCHS = 10
 BATCH_SIZE = 32
 OPTIMIZER = 'adam'
 LOSS = 'binary_crossentropy'
@@ -73,19 +73,18 @@ if __name__ == "__main__":
     # Example usage
     if DO_PREPROCESSING is True:
         #patient.plot_all()
-        #prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
-        #prep.baseline_fitting()
+        prep.butterworth(SAMPLING_RATE, LOWCUT, HIGHCUT)
+        prep.baseline_fitting()
 
         #prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
         #patient.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)])
         #patient.multi_plot_label()
-        #patient.plot_all()s
+        #patient.plot_all()
 
         '''Turns out removing very high/very low amplitudes is not that necessary 
         after applying Butterworth filtering and baseling fitting so this was not implemented.'''
 
         data_windows, annotation_windows = prep.extract_windows(WINDOW_SIZE, OVERLAP)
-        print(len(data_windows))
         signal1_windows = data_windows[:, :, 0:1]
         signal2_windows = data_windows[:, :, 1:2]
         
@@ -94,8 +93,8 @@ if __name__ == "__main__":
         print(annotation_counts)
 
         save = Save(PATIENT_NUMBER, signal1_windows, signal2_windows, annotation_windows)
-        save.save_data_json()
-        save.save_data_csv()
+        #save.save_data_json()
+        #save.save_data_csv()
         
     else:
         load = Load(PATIENT_NUMBER)

@@ -8,34 +8,24 @@ from scipy.signal import medfilt, butter, filtfilt, iirnotch
 
 class Preprocessing():
 
-
+    
     def __init__(self, record, annotation, valid, invalid, artifacts):
         self.record = record
         self.annotation = annotation
         self.valid_annotations = valid
         self.invalid_annotations = invalid
-
         self.artifacts = artifacts
 
-    '''
-    def __init__(self, record, annotation, valid, invalid, window_size, artifacts):
-        self.record = record
-        self.annotation = annotation
-        self.valid_annotations = valid
-        self.invalid_annotations = invalid
-        self.window_size = window_size
-        self.artifacts = artifacts
 
-        #self.signal1 = self.record.p_signal[:, 0].flatten()
-        #self.signal2 = self.record.p_signal[:, 1].flatten()
+
+        self.signal1 = self.record.p_signal[:, 0].flatten()
+        self.signal2 = self.record.p_signal[:, 1].flatten()
         #self.labels = None
-
-    '''
 
     def is_artifact(self, start, end):
         """Check if the window falls within any of the intervals to remove."""
         for art_start, art_end in self.artifacts:
-            if start < art_end or end > art_start:
+            if start < art_end and end > art_start:
                 return True
         return False
 
@@ -60,6 +50,10 @@ class Preprocessing():
             if any(ann in self.invalid_annotations for ann in annotation_symbols_in_window):
                 continue
 
+            # Skip windows that fall within intervals to remove
+            if self.is_artifact(start, end):
+                continue
+
             # Determine the majority annotation
             annotation_counts = pd.Series(annotation_symbols_in_window).value_counts()
             majority_annotation = annotation_counts.idxmax()
@@ -70,6 +64,7 @@ class Preprocessing():
         return np.array(data_windows), np.array(annotation_windows)
 
     def butterworth(self, fs, lowcut, highcut):
+        
         nyquist = 0.5 * fs
         low = lowcut / nyquist
         high = highcut / nyquist
