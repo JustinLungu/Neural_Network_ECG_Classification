@@ -18,8 +18,8 @@ VALID_ANNOTATIONS = {"N", "R"}
 NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {"~", "+", "|"}
 
-DO_PREPROCESSING = True
-DO_TRAINING = True
+DO_PREPROCESSING = False
+DO_TRAINING = False
 
 SAMPLING_RATE = 360
 LOWCUT = 0.5
@@ -203,7 +203,8 @@ if __name__ == "__main__":
     print(f"Test Loss: {test_loss}, Test Accuracy: {test_accuracy}")
 
     # Make predictions
-    test_predictions = cnn_model.model.predict(test_data)
+    test_predictions = cnn_model.predict(test_data)
+    #test_predictions = cnn_model.model.predict(test_data)
     test_predictions = np.round(test_predictions).astype(int)
 
     # Calculate F1 Score
@@ -211,3 +212,14 @@ if __name__ == "__main__":
 
     # Plot confusion matrix
     evaluation.plot_confusion_matrix(test_labels, test_predictions, labels=["N", "R"])
+
+
+
+'''
+Stuff to do:
+- balance the confusion matrix
+- print the summary of the model after training
+- try the tinyvgg architecture
+- try to convert the model to tflite (for netron)
+
+'''

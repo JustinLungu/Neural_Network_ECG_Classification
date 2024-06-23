@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import f1_score
+from sklearn.utils import resample
+import numpy as np
 
 
 class Evaluation:
@@ -32,7 +34,24 @@ class Evaluation:
         return f1
 
     def plot_confusion_matrix(self, y_true, y_pred, labels):
-        cm = confusion_matrix(y_true, y_pred)
+        # Find the minimum number of samples for any label
+        unique_labels, counts = np.unique(y_true, return_counts=True)
+        min_samples = min(counts)
+        
+        # Resample each label to have the same number of samples as the label with the fewest samples
+        balanced_y_true = []
+        balanced_y_pred = []
+        for label in unique_labels:
+            indices = np.where(y_true == label)[0]
+            selected_indices = resample(indices, n_samples=min_samples, replace=False, random_state=42)
+            balanced_y_true.extend(y_true[selected_indices])
+            balanced_y_pred.extend(y_pred[selected_indices])
+        
+        balanced_y_true = np.array(balanced_y_true)
+        balanced_y_pred = np.array(balanced_y_pred)
+
+        # Calculate and plot confusion matrix
+        cm = confusion_matrix(balanced_y_true, balanced_y_pred)
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         disp.plot(cmap=plt.cm.Blues)
         plt.title("Confusion Matrix")
