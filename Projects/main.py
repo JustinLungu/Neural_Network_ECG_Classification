@@ -44,7 +44,7 @@ TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
-MODEL_NAME = "model"
+MODEL_NAME = "tinyVGG"
 EPOCHS = 10
 BATCH_SIZE = 32
 OPTIMIZER = "adam"
@@ -190,7 +190,8 @@ if __name__ == "__main__":
         sl_model.save_model_h5(cnn_model.model)
         sl_model.save_model_pkl(cnn_model.model)
         # WARNING: Does not work with tensorflow 2.16 but does work with 2.15
-        # sl_model.save_model_tflite(cnn_model.model)
+        #sl_model.save_model_tflite(cnn_model.model)
+
 
         evaluation = Evaluation(model_history)
         evaluation.plot_loss()
@@ -214,14 +215,3 @@ if __name__ == "__main__":
 
     # Plot confusion matrix
     evaluation.plot_confusion_matrix(test_labels, test_predictions, labels=["N", "R"])
-
-
-
-'''
-Stuff to do:
-- balance the confusion matrix
-- print the summary of the model after training
-- try the tinyvgg architecture
-- try to convert the model to tflite (for netron)
-
-'''
