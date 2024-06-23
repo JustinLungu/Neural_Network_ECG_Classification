@@ -19,7 +19,7 @@ NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {"~", "+", "|"}
 
 DO_PREPROCESSING = False
-DO_TRAINING = False
+DO_TRAINING = True
 
 SAMPLING_RATE = 360
 LOWCUT = 0.5
@@ -44,7 +44,7 @@ TRAIN_RATIO = 0.7
 VAL_RATIO = 0.2
 TEST_RATIO = 1 - (TRAIN_RATIO + VAL_RATIO)
 
-MODEL_NAME = "model"
+MODEL_NAME = "tinyVGG_half"
 EPOCHS = 10
 BATCH_SIZE = 32
 OPTIMIZER = "adam"
@@ -183,6 +183,8 @@ if __name__ == "__main__":
             EPOCHS,
             BATCH_SIZE,
         )
+
+        cnn_model.model.summary()
 
         # saving the model
         sl_model.save_model_h5(cnn_model.model)
