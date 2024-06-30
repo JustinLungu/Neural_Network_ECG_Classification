@@ -40,19 +40,15 @@ class CNNModel:
 
         # branch for signal1
         x1 = Conv1D(filters=32, kernel_size=3, activation="relu")(input1)
-        #x1 = Conv1D(filters=32, kernel_size=3, activation="relu")(x1)
         x1 = MaxPooling1D(pool_size=2)(x1)
         x1 = Conv1D(filters=64, kernel_size=3, activation="relu")(x1)
-        #x1 = Conv1D(filters=64, kernel_size=3, activation="relu")(x1)
         x1 = MaxPooling1D(pool_size=2)(x1)
         x1 = Flatten()(x1)
 
         # branch for signal2
         x2 = Conv1D(filters=32, kernel_size=3, activation="relu")(input2)
-        #x2 = Conv1D(filters=32, kernel_size=3, activation="relu")(x2)
         x2 = MaxPooling1D(pool_size=2)(x2)
         x2 = Conv1D(filters=64, kernel_size=3, activation="relu")(x2)
-        #x2 = Conv1D(filters=64, kernel_size=3, activation="relu")(x2)
         x2 = MaxPooling1D(pool_size=2)(x2)
         x2 = Flatten()(x2)
 
