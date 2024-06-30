@@ -12,6 +12,7 @@ from save_load import Save
 from visualization import Visualization
 
 PATIENT_NUMBER = 212
+NR_RANDOM_INDEXES = 4
 WINDOW_SIZE = 200
 OVERLAP = 0.5  # 0.5 = 50%
 VALID_ANNOTATIONS = {"N", "R"}
@@ -61,25 +62,25 @@ def split_balance_norm(
 
     #plot each signal individually from train, validation and test
     if DO_VISUALIZATION is True:
-        patient.plot_1_signal(prep.signal1.train, prep.labels.train, title="Signal 1 Training Data", filename="s1_train.png") # noqa
-        patient.plot_1_signal(prep.signal1.val, prep.labels.val, title="Signal 1 Validation Data", filename="s1_val.png") # noqa
-        patient.plot_1_signal(prep.signal1.test, prep.labels.test, title="Signal 1 Test Data", filename="s1_test.png") # noqa
+        patient.plot_1_signal(prep.signal1.train, prep.labels.train, title="Signal 1 Training Data", filename="s1_train.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal1.val, prep.labels.val, title="Signal 1 Validation Data", filename="s1_val.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal1.test, prep.labels.test, title="Signal 1 Test Data", filename="s1_test.png", nr_random_index = NR_RANDOM_INDEXES)
 
-        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data", filename="s2_train.png") # noqa
-        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data", filename="s2_val.png") # noqa
-        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data", filename="s2_test.png") # noqa
+        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data", filename="s2_train.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data", filename="s2_val.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data", filename="s2_test.png", nr_random_index = NR_RANDOM_INDEXES)
 
     prep.balance_data()
     prep.normalize_minmax()
 
     if DO_VISUALIZATION is True:
-        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 1 Training Data Normalized", filename="s1_train_norm.png") # noqa
-        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 1 Validation Data Normalized", filename="s1_val_norm.png") # noqa
-        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 1 Test Data Normalized", filename="s1_test_norm.png") # noqa
+        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 1 Training Data Normalized", filename="s1_train_norm.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 1 Validation Data Normalized", filename="s1_val_norm.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 1 Test Data Normalized", filename="s1_test_norm.png", nr_random_index = NR_RANDOM_INDEXES)
 
-        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data Normalized", filename="s2_train_norm.png") # noqa
-        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data Normalized", filename="s2_val_norm.png") # noqa
-        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data Normalized", filename="s2_test_norm.png") # noqa
+        patient.plot_1_signal(prep.signal2.train, prep.labels.train, title="Signal 2 Training Data Normalized", filename="s2_train_norm.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.val, prep.labels.val, title="Signal 2 Validation Data Normalized", filename="s2_val_norm.png", nr_random_index = NR_RANDOM_INDEXES)
+        patient.plot_1_signal(prep.signal2.test, prep.labels.test, title="Signal 2 Test Data Normalized", filename="s2_test_norm.png", nr_random_index = NR_RANDOM_INDEXES)
 
 
 if __name__ == "__main__":

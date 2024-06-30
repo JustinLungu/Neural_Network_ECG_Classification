@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-
 import matplotlib.pyplot as plt
 import numpy as np
 import wfdb
@@ -17,8 +16,6 @@ class Visualization:
             + "/"
         )
         self.plots_path = "../Neural_Network_ECG_Classification/Projects/Plots/"
-        # self.data_path = '../Collected_Data/patient_' + str(p_number) + '/'
-        # self.plots_path = '../Projects/Plots/'
         self.valid_annotations = {
             "N",
             "A",
@@ -45,13 +42,11 @@ class Visualization:
         self.plot_artifacts = plot_artifacts
 
     def _save_plot(self, filename):
-        # Create the directory if it doesn't exist
+        # create directory if doesn't exist
         save_dir = "../Neural_Network_ECG_Classification/Projects/Plots/"
-        # save_dir = '../Projects/Plots/'
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
-        # Save the current plot
         plt.savefig(os.path.join(save_dir, filename), bbox_inches="tight")
         print(f"Plot saved as {filename} in {save_dir}")
 
@@ -74,7 +69,7 @@ class Visualization:
             end = end + 2000
 
     def plot_all(self):
-        """This function plots the entire signal."""
+        """plots the entire signal."""
         plt.figure(figsize=(10, 4))
         plt.plot(self.record.p_signal)
         plt.title("Whole signal")
@@ -142,23 +137,23 @@ class Visualization:
     def plot_annotation_signals(self):
         time_per_sample = (
             1 / self.record.fs if self.record.fs else 1 / 360
-        )  # Default sampling frequency
+        )  # default sampling frequency
 
         plt.figure(figsize=(12, 6))
-        ax = plt.gca()  # Get current axis
+        ax = plt.gca()  # gca = get current axis
 
-        # Map each annotation type to a unique color
+        # map each annotation type to a unique color
         unique_symbols = sorted(
             set(self.annotation.symbol).intersection(self.valid_annotations),
         )
         colors = plt.cm.viridis(
             np.linspace(0, 1, len(unique_symbols)),
-        )  # Viridis color map
+        )
         symbol_to_color = {
             symbol: color for symbol, color in zip(unique_symbols, colors)
         }
 
-        # Plot annotations from both channels with the same color
+        # plot annotations from both channels
         for idx, symbol in enumerate(self.annotation.symbol):
             if symbol in self.valid_annotations and idx < len(self.record.p_signal):
                 time_point = self.annotation.sample[idx] * time_per_sample
@@ -189,26 +184,25 @@ class Visualization:
 
         time_per_sample = (
             1 / self.record.fs if self.record.fs else 1 / 360
-        )  # Default sampling frequency
+        ) 
 
-        # Setting up the plot with two subplots, one for each channel
+        # set the plot with two subplots, one for each channel
         fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(12, 12), sharex=True)
-        axes = axes.flatten()  # Flatten in case we use more subplots later
+        axes = axes.flatten()  # flatten in case we use more subplots later
 
-        # Map each annotation type to a unique color
         unique_symbols = sorted(
             set(self.annotation.symbol).intersection(self.valid_annotations),
         )
         colors = plt.cm.viridis(
             np.linspace(0, 1, len(unique_symbols)),
-        )  # Viridis color map
+        ) 
         symbol_to_color = {
             symbol: color for symbol, color in zip(unique_symbols, colors)
         }
 
-        # Iterate over each channel
+        # iterate each channel
         for channel in range(self.record.p_signal.shape[1]):
-            ax = axes[channel]  # Select the subplot for the current channel
+            ax = axes[channel]  # select subplot for current channel
             for idx, symbol in enumerate(self.annotation.symbol):
                 if symbol in self.valid_annotations and idx < len(self.record.p_signal):
                     time_point = self.annotation.sample[idx] * time_per_sample
@@ -239,21 +233,11 @@ class Visualization:
         self._save_plot(f"patient_{self.p_number}_annotation_sep_channels.png")
         plt.show()
 
-    def plot_1_signal(self, values_list, annotations, title, filename=None):
-        """Plots the given arrays of values using matplotlib.
+    def plot_1_signal(self, values_list, annotations, title, filename=None, nr_random_index = 4):
+        # select 4 random indexes
+        random_indexes = np.random.choice(len(values_list), nr_random_index, replace=False)
 
-        Parameters:
-        values_list (list of arrays): A list of numerical arrays to plot.
-        annotations (list of str): Corresponding annotations for the values.
-        title (str): The title for the plot.
-        filename (str, optional): The filename to save the plot.
-            If None, the plot is not saved.
-        """
-
-        # Select 4 random indexes
-        random_indexes = np.random.choice(len(values_list), 4, replace=False)
-
-        # Get the values and annotations for the random indexes
+        # get values and annotations for random indexes
         values_list = [values_list[idx] for idx in random_indexes]
         annotations = [annotations[idx] for idx in random_indexes]
 
@@ -270,7 +254,7 @@ class Visualization:
         plt.suptitle(title)
         plt.tight_layout(
             rect=[0, 0, 1, 0.96],
-        )  # Adjust the layout to make space for the suptitle
+        )
 
         if filename:
             save_path = os.path.join(self.plots_path, filename)
