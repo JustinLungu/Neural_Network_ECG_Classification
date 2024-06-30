@@ -78,37 +78,42 @@ class Visualization:
         self._save_plot(f"patient_{self.p_number}_all.png")
         plt.show()
 
-    def multi_plot_label(self):
+    def multi_plot_label(self, num_plots, num_cols):
         """Plots 4 random 1000 sample windows or Plots the artifacts, depending
         on self.plot_artifacts."""
 
         plt.figure(figsize=(15, 10))
 
+        start = [
+            np.random.randint(0, self.record.p_signal.shape[0] - 1000)
+            for _ in range(num_plots)
+        ]
+        end = [start_index + 1000 for start_index in start]
+
+
+        """
         if self.plot_artifacts == 0:
-            num_plots = 4
             start = [
                 np.random.randint(0, self.record.p_signal.shape[0] - 1000)
                 for _ in range(num_plots)
             ]
             end = [start_index + 1000 for start_index in start]
-            num_cols = 2
         else:
-            num_plots = 6
             start = [231500, 252000, 375000, 502250, 572000, 580500]
             end = [start_index + 1000 for start_index in start]
-            num_cols = 3
+        """
 
         for i in range(1, num_plots + 1):
             plt.subplot(2, num_cols, i)
 
-            # Plot both channels
+            # plot both channels
             for channel in range(self.record.p_signal.shape[1]):
                 plt.plot(
                     self.record.p_signal[start[i - 1] : end[i - 1], channel],
                     label=f"Channel {channel + 1}",
                 )
 
-            # Filter and plot annotations within the segment for both channels
+            # filter and plot annotations within the segment for both channels
             valid_indices = (self.annotation.sample >= start[i - 1]) & (
                 self.annotation.sample < end[i - 1]
             )
@@ -116,13 +121,12 @@ class Visualization:
             segment_ann_symbols = np.array(self.annotation.symbol)[valid_indices]
 
             for idx, symbol in zip(segment_ann_indices, segment_ann_symbols):
-                # Plot annotations on top of both channels
-                # Adjust 'y' for visibility if necessary
+                # plot annotations on top of both channels
                 y_offset = self.record.p_signal[
                     idx + start[i - 1],
                     0,
-                ]  # Adjust according to the signal amplitude
-                plt.plot(idx, y_offset, "ro")  # Mark annotation on the first channel
+                ]
+                plt.plot(idx, y_offset, "ro")
                 plt.text(idx, y_offset, symbol, color="red", fontsize=12)
 
             plt.title(f"ECG Segment from {start[i-1]} to {end[i-1]}")

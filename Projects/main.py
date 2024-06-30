@@ -12,7 +12,7 @@ from save_load import Save
 from visualization import Visualization
 
 PATIENT_NUMBER = 212
-NR_RANDOM_INDEXES = 4
+NR_RANDOM_PLOTS = 4
 WINDOW_SIZE = 200
 OVERLAP = 0.5  # 0.5 = 50%
 VALID_ANNOTATIONS = {"N", "R"}
@@ -22,7 +22,7 @@ NUM_CLASSES = len(VALID_ANNOTATIONS)
 INVALID_ANNOTATIONS = {"~", "+", "|"}
 
 DO_VISUALIZATION = False
-DO_PREPROCESSING = False
+DO_PREPROCESSING = True
 DO_TRAINING = True
 
 SAMPLING_RATE = 360
@@ -105,7 +105,7 @@ if __name__ == "__main__":
 
         # prep.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)]) # noqa
         # patient.record.p_signal = np.array([list(tup) for tup in zip(prep.signal1, prep.signal2)]) # noqa
-        # patient.multi_plot_label()
+        patient.multi_plot_label(NR_RANDOM_PLOTS, num_cols = 2)
         # patient.plot_all()
         """
         Turns out removing very high/very low amplitudes is not that necessary after
