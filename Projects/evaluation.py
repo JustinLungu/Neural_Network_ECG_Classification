@@ -28,6 +28,19 @@ class Evaluation:
         plt.savefig(os.path.join(self.plots_path, "loss_plot.png"))
         plt.show()
 
+    def plot_accuracy(self):
+
+        plt.figure(figsize=(10, 5))
+        plt.plot(self.history.history['accuracy'], label='Training Accuracy')
+        plt.plot(self.history.history['val_accuracy'], label='Validation Accuracy')
+        plt.title('Accuracy Over Epochs')
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.legend()
+        plt.grid(True)
+        plt.savefig(os.path.join(self.plots_path, "accuracy.png"))
+        plt.show()
+
     def calculate_f1_score(self, y_true, y_pred):
         f1 = f1_score(y_true, y_pred, average="binary")
         print(f"F1 Score: {f1:.4f}")

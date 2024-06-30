@@ -195,6 +195,7 @@ if __name__ == "__main__":
 
         evaluation = Evaluation(model_history)
         evaluation.plot_loss()
+        evaluation.plot_accuracy()
 
     else:
         # load model
