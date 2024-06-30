@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -22,18 +21,16 @@ class Save:
         self.signal2 = signal2
         self.annotation = annotation
 
-        # Create the directory if it doesn't exist
         if not os.path.exists(self.data_path):
             os.makedirs(self.data_path)
 
     def save_data_json(self):
 
-        # Convert numpy arrays to lists
+        # numpy arrays to lists
         signal1_windows_list = self.signal1.tolist()
         signal2_windows_list = self.signal2.tolist()
         annotation_windows_list = self.annotation.tolist()
 
-        # Save to JSON
         data_json = {
             "signal1_windows": signal1_windows_list,
             "signal2_windows": signal2_windows_list,
@@ -49,8 +46,7 @@ class Save:
         print("Data saved to ecg_data.json")
 
     def save_data_csv(self):
-        # Save to CSV
-        # Flatten the signal windows to 2D arrays for CSV saving
+        # flatten the signal windows to 2D arrays for CSV saving
         signal1_windows_flat = self.signal1.reshape(self.signal1.shape[0], -1)
         signal2_windows_flat = self.signal2.reshape(self.signal2.shape[0], -1)
 
@@ -82,18 +78,15 @@ class Model_Save_Load:
         self.model_path = "../Neural_Network_ECG_Classification/Models/"
         self.model_name = model_name
 
-        # Create the directory if it doesn't exist
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
 
     def save_model_h5(self, model):
-        # Save as .h5
         model_save_path_h5 = os.path.join(self.model_path, self.model_name + ".h5")
         model.save(model_save_path_h5)
         print(f"Model saved to {model_save_path_h5}")
 
     def save_model_tflite(self, model):
-        # Save as .tflite
         tflite_filepath = os.path.join(self.model_path, self.model_name + ".tflite")
         converter = tf.lite.TFLiteConverter.from_keras_model(model)
         tflite_model = converter.convert()
