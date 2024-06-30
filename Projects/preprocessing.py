@@ -41,7 +41,7 @@ class Preprocessing:
             end = start + window_size
             window = self.record.p_signal[start:end]
 
-            # Get the annotations in the current window
+            # get annotations in the current window
             annotations_in_window = self.annotation.sample[
                 (self.annotation.sample >= start) & (self.annotation.sample < end)
             ]
@@ -54,17 +54,17 @@ class Preprocessing:
             if len(annotation_symbols_in_window) == 0:
                 continue
 
-            # Check if any invalid annotations are in the window
+            # check for any invalid annotations in the window
             if any(
                 ann in self.invalid_annotations for ann in annotation_symbols_in_window
             ):
                 continue
 
-            # Skip windows that fall within intervals to remove
+            # skip windows that fall within invalid intervals
             if self.is_artifact(start, end):
                 continue
 
-            # Determine the majority annotation
+            #determine the majority annotation
             annotation_counts = pd.Series(annotation_symbols_in_window).value_counts()
             majority_annotation = annotation_counts.idxmax()
 
@@ -74,7 +74,6 @@ class Preprocessing:
         return np.array(data_windows), np.array(annotation_windows)
 
     def butterworth(self, fs, lowcut, highcut):
-
         nyquist = 0.5 * fs
         low = lowcut / nyquist
         high = highcut / nyquist
@@ -92,12 +91,6 @@ class Preprocessing:
         self.signal1 = processed_list[0]
         self.signal2 = processed_list[1]
 
-    def remove_artifacts(self):
-        pass
-
-    def remove_high_low(self):
-        pass
-
     def split_data(
         self,
         signal1,
@@ -112,7 +105,7 @@ class Preprocessing:
             train_r + val_r + test_r == 1
         ), "The sum of train_r, val_r, and test_r must be 1."
 
-        # First split: training set and remaining set
+        # first split: training set and remaining set
         indices = np.arange(len(labels))
         train_indices, remaining_indices, train_labels, remaining_labels = (
             train_test_split(
@@ -123,7 +116,7 @@ class Preprocessing:
             )
         )
 
-        # Second split: validation set and test set from the remaining set
+        # second split: validation set and test set from the remaining set
         val_indices, test_indices, val_labels, test_labels = train_test_split(
             remaining_indices,
             remaining_labels,
@@ -131,7 +124,7 @@ class Preprocessing:
             random_state=random_state,
         )
 
-        # Split signal1 and signal2 using the indices
+        # split signal1 and signal2 using the indices
         train_signal1 = signal1[train_indices]
         val_signal1 = signal1[val_indices]
         test_signal1 = signal1[test_indices]
@@ -140,6 +133,7 @@ class Preprocessing:
         val_signal2 = signal2[val_indices]
         test_signal2 = signal2[test_indices]
 
+        # make nice variables
         self.signal1 = Data_Info(train_signal1, val_signal1, test_signal1)
         self.signal2 = Data_Info(train_signal2, val_signal2, test_signal2)
         self.labels = Data_Info(train_labels, val_labels, test_labels)
@@ -170,7 +164,7 @@ class Preprocessing:
         print("After balancing:")
         print(Counter(labels_balanced))
 
-        # eeshape signals back to normal
+        #shape signals back to normal
         self.signal1.train = signal1_balanced.reshape(-1, window_size, n_channels)
         self.signal2.train = signal2_balanced.reshape(-1, window_size, n_channels)
         self.labels.train = labels_balanced
