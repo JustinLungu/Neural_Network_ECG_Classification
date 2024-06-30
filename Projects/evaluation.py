@@ -47,11 +47,11 @@ class Evaluation:
         return f1
 
     def plot_confusion_matrix(self, y_true, y_pred, labels):
-        # Find the minimum number of samples for any label
+        #minimum number of samples for any label
         unique_labels, counts = np.unique(y_true, return_counts=True)
         min_samples = min(counts)
         
-        # Resample each label to have the same number of samples as the label with the fewest samples
+        #resample each label to have the same number of samples as the label with the fewest samples
         balanced_y_true = []
         balanced_y_pred = []
         for label in unique_labels:
@@ -63,7 +63,7 @@ class Evaluation:
         balanced_y_true = np.array(balanced_y_true)
         balanced_y_pred = np.array(balanced_y_pred)
 
-        # Calculate and plot confusion matrix
+        # make confusion matrix
         cm = confusion_matrix(balanced_y_true, balanced_y_pred)
         disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         disp.plot(cmap=plt.cm.Blues)
